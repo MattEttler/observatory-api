@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "aws-sdk": "^2.437.0"
+    "aws-sdk": "^2.437.0",
+    "serverless-domain-manager": "^3.2.1"
   },
   "devDependencies": {
     "jasmine": "^3.4.0",
