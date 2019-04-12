@@ -23,7 +23,7 @@ steps:
   #displayName: 'npm test'
 
 - script: |
-    serverless config credentials --provider aws --key ${AWS_ACCT_ID} --secret ${AWS_ACCT_SECRET}
+    serverless config credentials --provider aws --key $(AWS_ACCT_ID) --secret $(AWS_ACCT_SECRET)
   displayName: 'serverless config'
 
 - script: |
