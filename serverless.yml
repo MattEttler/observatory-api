@@ -7,6 +7,15 @@ provider:
   stage: dev
   region: us-east-1
 
+plugins:
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: api.o9y.soma.farm
+    basePath: ''
+    stage: ${self:provider.stage}
+
 functions:
   observationGetUploadUrl:
     handler: src/observation/observation-handler.getUploadURL
