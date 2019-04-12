@@ -16,6 +16,7 @@ steps:
 - script: |
     cd observatory-api
     npm install -g serverless
+    npm install jasmine
   displayName: 'npm install'
 
 - script: |
