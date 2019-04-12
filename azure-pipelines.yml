@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+- group: Observation
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    cd observatory-api
+    npm install -g serverless
+  displayName: 'npm install'
+
+- script: |
+    npm run test
+  displayName: 'npm test'
+
+- script: |
+    serverless config credentials --provider aws --key ${AWS_ACCT_ID} --secret ${AWS_ACCT_SECRET}
+  displayName: 'serverless config'
+
+- script: |
+    sls deploy
+  displayName: 'serverless deploy'
