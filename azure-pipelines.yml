@@ -23,7 +23,6 @@ steps:
   #displayName: 'npm test'
 
 - script: |
-    export AWS_ACCESS_KEY_ID=$(AWS_ACCT_ID)
-    export AWS_SECRET_ACCESS_KEY=$(AWS_ACCT_SECRET)
+    serverless config credentials --provider aws --key $AWS_ACCT_ID --secret $AWS_ACCT_SECRET
     sls deploy
   displayName: 'serverless deploy'
