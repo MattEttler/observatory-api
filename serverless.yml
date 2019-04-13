@@ -15,6 +15,8 @@ custom:
     domainName: api.o9y.soma.farm
     basePath: ''
     stage: ${self:provider.stage}
+    certificateName: soma_main_cert
+    createRoute53Record: true
 
 functions:
   observationGetUploadUrl:
