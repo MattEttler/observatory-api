@@ -14,8 +14,8 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    cd observatory-api
     npm install -g serverless
+    npm i
   displayName: 'npm install'
 
 #- script: |
