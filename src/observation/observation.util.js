@@ -15,7 +15,7 @@ module.exports = {
             Bucket: 'o9y.observations',
             Key: `${actionId}`,
             ContentType: 'image/*',
-            ACL: 'public-read',
+            Expires: 900000
         }
         return {
             url: s3.getSignedUrl('putObject', s3Params),

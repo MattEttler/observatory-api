@@ -26,3 +26,4 @@ functions:
       - http:
           path: observation
           method: get
+          cors: true
