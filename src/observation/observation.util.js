@@ -9,12 +9,14 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 module.exports = {
-    requestObservationUploadLink: () => {
+    requestObservationUploadLink: (fileType) => {
+        console.log(fileType);
+
         const actionId = uuidv4()
         const s3Params = {
             Bucket: 'o9y.observations',
             Key: `${actionId}`,
-            ContentType: 'image/*',
+            ContentType: fileType,
             Expires: 900000
         }
         return {

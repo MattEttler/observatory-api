@@ -26,4 +26,10 @@ functions:
       - http:
           path: observation
           method: get
+          request:
+            template:
+              application/json: >
+                {
+                  "fileType" : "$input.params('fileType')"
+                }
           cors: true
