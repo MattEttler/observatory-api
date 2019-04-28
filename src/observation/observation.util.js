@@ -10,8 +10,6 @@ const s3 = new AWS.S3();
 
 module.exports = {
     requestObservationUploadLink: (fileType) => {
-        console.log(fileType);
-
         const actionId = uuidv4()
         const s3Params = {
             Bucket: 'o9y.observations',

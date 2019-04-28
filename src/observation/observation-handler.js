@@ -3,8 +3,6 @@
 const observationUtil = require('./observation.util.js');
 
 module.exports.getUploadURL = async function (event) {
-  console.log(event);
-
   const fileLocation = observationUtil.requestObservationUploadLink(event.queryStringParameters.fileType);
   return {
     statusCode: 200,
