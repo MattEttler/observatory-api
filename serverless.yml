@@ -33,3 +33,12 @@ functions:
                   "fileType" : "$input.params('fileType')"
                 }
           cors: true
+
+  observationGetLatest:
+    handler: src/observation/observation-handler.getLatest
+
+    events:
+      - http:
+          path: observation/latest
+          method: get
+          cors: true
