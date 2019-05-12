@@ -17,7 +17,7 @@ module.exports.requestObservationUploadLink = function (fileType) {
     var year = dateObj.getUTCFullYear();
 
     const date_stamp = year + "-" + (month + 1) + "-" + day;
-    const timestamp = Math.floor(dateObj / 1000)
+    const timestamp = dateObj.getTime();
     const s3Params = {
         Bucket: `o9y.observations/${date_stamp}`,
         Key: `${timestamp}`,
