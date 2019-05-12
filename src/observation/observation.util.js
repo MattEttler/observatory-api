@@ -44,11 +44,43 @@ module.exports.getLatestObservation = async function () {
         Prefix: `${date_stamp}/`,
         MaxKeys: 1000
     };
-    let response = await s3.listObjects(s3Params).promise();
-    console.log(response);
-    let men = response.Contents.map(obj => Number(obj.Key.substring(9)));
-    console.log(men);
-    console.log(...men);
 
-    return `${date_stamp}/${Math.max(...men)}`
+    const observations = (await this.listAllKeys(s3Params)).map(obj => obj.Key);
+    console.log(`${observations.length} observations fetched in total.`)
+    const collator = new Intl.Collator(undefined, {
+        numeric: true
+    });
+    const latestObservation = observations.sort(collator.compare)[observations.length - 1];
+
+    const s3SignUrlParams = {
+        Bucket: `o9y.observations`,
+        Key: latestObservation,
+        Expires: 60
+    };
+
+    return {
+        url: s3.getSignedUrl('getObject', s3SignUrlParams),
+        dateTime: `${latestObservation}`
+    }
 };
+
+module.exports.listAllKeys = async function (s3Params) {
+    console.log("fetching a page of observations...")
+    var keys = []
+    if (s3Params.data) {
+        keys = keys.concat(s3Params.data)
+    }
+    delete s3Params['data']
+
+    await s3.listObjectsV2(s3Params).promise().then(async (data) => {
+        if (data.IsTruncated) {
+            console.log(`found another page of observations.`)
+            s3Params['ContinuationToken'] = data.NextContinuationToken
+            s3Params['data'] = data.Contents
+            keys = keys.concat(await this.listAllKeys(s3Params));
+        } else {
+            keys = keys.concat(data.Contents)
+        }
+    });
+    return keys;
+}

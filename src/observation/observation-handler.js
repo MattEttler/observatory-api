@@ -18,16 +18,15 @@ module.exports.getUploadURL = async function (event) {
 };
 
 module.exports.getLatest = async function (event) {
-  const s3Url = await observationUtil.getLatestObservation();
   const response = {
     statusCode: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true
     },
-    body: JSON.stringify({
-      observationUrl: s3Url
-    })
+    body: JSON.stringify(
+      await observationUtil.getLatestObservation()
+    )
   };
 
   return response;
