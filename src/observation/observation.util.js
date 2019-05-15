@@ -60,7 +60,7 @@ module.exports.getLatestObservation = async function () {
 
     return {
         url: s3.getSignedUrl('getObject', s3SignUrlParams),
-        dateTime: `${latestObservation}`
+        dateTime: `${latestObservation.split('/')[1]}`
     }
 };
 

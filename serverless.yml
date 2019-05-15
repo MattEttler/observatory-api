@@ -28,7 +28,7 @@ custom:
     domainName: api.o9y.soma.farm
     basePath: ''
     stage: ${self:provider.stage}
-    certificateName: 'soma.farm'
+    certificateName: 'api.o9y.soma.farm'
     createRoute53Record: false
 
 functions:
