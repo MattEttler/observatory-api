@@ -16,3 +16,18 @@ module.exports.getUploadURL = async function (event) {
     }),
   };
 };
+
+module.exports.getLatest = async function (event) {
+  const response = {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    },
+    body: JSON.stringify(
+      await observationUtil.getLatestObservation()
+    )
+  };
+
+  return response;
+};

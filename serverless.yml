@@ -7,6 +7,19 @@ provider:
   stage: dev
   region: us-east-1
 
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:GetObject"
+      Resource:
+        - "arn:aws:s3:::o9y.observations/*"
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::o9y.observations"
+
 plugins:
   - serverless-domain-manager
 
@@ -15,7 +28,7 @@ custom:
     domainName: api.o9y.soma.farm
     basePath: ''
     stage: ${self:provider.stage}
-    certificateName: 'soma.farm'
+    certificateName: 'api.o9y.soma.farm'
     createRoute53Record: false
 
 functions:
@@ -32,4 +45,13 @@ functions:
                 {
                   "fileType" : "$input.params('fileType')"
                 }
+          cors: true
+
+  observationGetLatest:
+    handler: src/observation/observation-handler.getLatest
+
+    events:
+      - http:
+          path: observation/latest
+          method: get
           cors: true
