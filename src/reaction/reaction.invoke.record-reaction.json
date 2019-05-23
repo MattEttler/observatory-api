@@ -1,0 +1,10 @@
+{
+    "headers": {
+        "Content-Type": "application-json"
+    },
+    "path": "/reaction",
+    "httpMethod": "POST",
+    "body": {
+        "reaction_type": "positive"
+    }
+}
