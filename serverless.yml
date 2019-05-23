@@ -19,6 +19,17 @@ provider:
         - "s3:ListBucket"
       Resource:
         - "arn:aws:s3:::o9y.observations"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [ ReactionsTable, Arn ]
 
 plugins:
   - serverless-domain-manager
@@ -55,3 +66,32 @@ functions:
           path: observation/latest
           method: get
           cors: true
+
+  recordReaction:
+    handler: src/reaction/reaction-handler.recordReaction
+
+    events:
+      - http:
+          path: reaction
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    ReactionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: reactions
+        AttributeDefinitions:
+          - AttributeName: reaction_type
+            AttributeType: S
+          - AttributeName: datetime
+            AttributeType: N
+        KeySchema:
+          - AttributeName: reaction_type
+            KeyType: HASH
+          - AttributeName: datetime
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
