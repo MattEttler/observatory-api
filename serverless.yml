@@ -13,12 +13,12 @@ provider:
         - "s3:PutObject"
         - "s3:GetObject"
       Resource:
-        - "arn:aws:s3:::o9y.observations/*"
+        - "arn:aws:s3:::o9y.soil.observations/*"
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
       Resource:
-        - "arn:aws:s3:::o9y.observations"
+        - "arn:aws:s3:::o9y.soil.observations"
     - Effect: Allow
       Action:
         - dynamodb:DescribeTable
@@ -28,8 +28,14 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
       Resource:
         - "Fn::GetAtt": [ ReactionsTable, Arn ]
+        - "Fn::GetAtt": [ EventsTable, Arn ]
+        - "Fn::GetAtt": [ EventsDailyRollupTable, Arn ]
 
 plugins:
   - serverless-domain-manager
@@ -43,6 +49,21 @@ custom:
     createRoute53Record: false
 
 functions:
+  measureObservationFoliage:
+    handler: src/observation/observation-handler.measureFoliage
+    events:
+      - s3:
+          bucket: o9y.soil.observations
+          event: s3:ObjectCreated:*
+  
+  getObservationFoliage:
+    handler: src/observation/observation-handler.getFoliageTimeSeries
+    events:
+      - http:
+          path: observation/foliage
+          method: get
+          cors: true
+
   observationGetUploadUrl:
     handler: src/observation/observation-handler.getUploadURL
 
@@ -67,9 +88,17 @@ functions:
           method: get
           cors: true
 
+  rollupFoliage:
+    handler: src/observation/observation-handler.rollupFoliageTimeSeries
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt: [ EventsTable, StreamArn ]
+          batchSize: 1
+
   recordReaction:
     handler: src/reaction/reaction-handler.recordReaction
-
     events:
       - http:
           path: reaction
@@ -78,6 +107,42 @@ functions:
 
 resources:
   Resources:
+    EventsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: events
+        AttributeDefinitions:
+          - AttributeName: event_type
+            AttributeType: S
+          - AttributeName: date_time
+            AttributeType: N
+        KeySchema:
+          - AttributeName: event_type
+            KeyType: HASH
+          - AttributeName: date_time
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        
+    EventsDailyRollupTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: events_daily_rollup
+        AttributeDefinitions:
+          - AttributeName: event_type
+            AttributeType: S
+          - AttributeName: date_time
+            AttributeType: N
+        KeySchema:
+          - AttributeName: event_type
+            KeyType: HASH
+          - AttributeName: date_time
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
     ReactionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
